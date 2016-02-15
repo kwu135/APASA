@@ -2,6 +2,8 @@ package com.uscapasa.apasa;
 
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -49,6 +51,18 @@ public class MainActivity extends AppCompatActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+        tabLayout.setTabMode(TabLayout.MODE_FIXED);
+        tabLayout.setFillViewport(true);
+        tabLayout.setupWithViewPager(mViewPager);
+        tabLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.tabsBackground));
+
+        tabLayout.getTabAt(0).setIcon(R.drawable.ic_action_news);
+        tabLayout.getTabAt(1).setIcon(R.drawable.ic_action_calendar_month);
+        tabLayout.getTabAt(2).setIcon(R.drawable.ic_account_circle);
+
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -141,19 +155,6 @@ public class MainActivity extends AppCompatActivity {
         public int getCount() {
             // Show 3 total pages.
             return 3;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return "SECTION 1";
-                case 1:
-                    return "SECTION 2";
-                case 2:
-                    return "SECTION 3";
-            }
-            return null;
         }
     }
 }
