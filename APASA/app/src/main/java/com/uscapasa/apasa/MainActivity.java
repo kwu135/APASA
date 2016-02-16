@@ -20,7 +20,9 @@ import android.view.ViewGroup;
 
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+import com.uscapasa.apasa.dummy.DummyContent;
+
+public class MainActivity extends AppCompatActivity implements ItemFragment.OnListFragmentInteractionListener{
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -99,6 +101,11 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onListFragmentInteraction(DummyContent.DummyItem item) {
+
+    }
+
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -130,6 +137,17 @@ public class MainActivity extends AppCompatActivity {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             TextView textView = (TextView) rootView.findViewById(R.id.section_label);
             textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+            switch(getArguments().getInt(ARG_SECTION_NUMBER)) {
+                case 0:
+                    textView.setText("Blog");
+                    break;
+                case 1:
+                    textView.setText("Events");
+                    break;
+                case 2:
+                    textView.setText("Settings");
+                    break;
+            }
             return rootView;
         }
     }
@@ -148,7 +166,12 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            switch (position) {
+                case 0:
+                    return ItemFragment.newInstance(1);
+                default:
+                    return PlaceholderFragment.newInstance(position + 1);
+            }
         }
 
         @Override
