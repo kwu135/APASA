@@ -22,6 +22,10 @@ public class BlogPostSingleton {
         return sBlogPostSingleton;
     }
 
+    public void addBlogPost(BlogPost blogPost) {
+        mBlogPosts.add(blogPost);
+    }
+
     public ArrayList<BlogPost> getBlogPosts() {
         return mBlogPosts;
     }

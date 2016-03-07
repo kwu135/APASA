@@ -14,6 +14,11 @@ import android.view.ViewGroup;
 
 import com.uscapasa.apasa.dummy.DummyContent;
 import com.uscapasa.apasa.dummy.DummyContent.DummyItem;
+import com.uscapasa.apasa.model.BlogPost;
+import com.uscapasa.apasa.model.BlogPostSingleton;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -122,7 +127,7 @@ public class ItemFragment extends Fragment {
         protected String doInBackground(String... arg0) {
             String result = null;
             try {
-                URL url = new URL(WP_JSON_URL + 4);
+                URL url = new URL(WP_JSON_URL + 1);
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 try {
                     InputStream in = new BufferedInputStream(urlConnection.getInputStream());
@@ -131,10 +136,7 @@ public class ItemFragment extends Fragment {
                     String line = null;
                     while ((line = reader.readLine()) != null) {
                         stringBuilder.append(line + "\n");
-                        Log.d("ItemFragment", line);
                     }
-                    Log.d("ItemFragment", "REACHED");
-                    Log.d("ItemFragment", stringBuilder.toString().substring(0,10));
                     result = stringBuilder.toString();
                 } finally {
                     urlConnection.disconnect();
@@ -142,91 +144,34 @@ public class ItemFragment extends Fragment {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            /*DefaultHttpClient httpClient = new DefaultHttpClient(new BasicHttpParams());
-            HttpPost httpPost = new HttpPost(schoolInfo);
-            httpPost.setHeader("Content-type", "application/json");
-            InputStream inputStream = null;
-            String result = null;
-            try {
-                HttpResponse httpResponse = httpClient.execute(httpPost);
-                HttpEntity httpEntity = httpResponse.getEntity();
-                inputStream = httpEntity.getContent();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"), 8);
-                StringBuilder stringBuilder = new StringBuilder();
-                String line = null;
-                while ((line = reader.readLine()) != null) {
-                    stringBuilder.append(line + "\n");
-                }
-                result = stringBuilder.toString();
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    if (inputStream != null) {
-                        inputStream.close();
-                    }
-                } catch (Exception e) {
-                }
-            }*/
-            /*try {
-                JSONArray jsonArray= new JSONArray(result);
-                /*JSONObject jsonObject = jsonArray.getJSONObject(0);
-                String school_des = jsonObject.getString("SOC_SCHOOL_DESCRIPTION");
-                Log.v("TEST", school_des);
-                test += school_des;
-                Log.v("TEST2", test);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }*/
+            result = removeCSSFromString(result);
             return result;
         }
 
-        /*protected void onPostExecute(String result) {
-            LinearLayout ll = (LinearLayout) findViewById(R.id.buttonLayout);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            lp.setMargins(0, 6, 0, 6);
-            Context context = getApplicationContext();
-            /*Button myButton = new Button(context);
-            myButton.setText("TEXT");
-            myButton.setBackgroundColor(Color.LTGRAY);
-            myButton.setTextColor(Color.GRAY);
-            myButton.setPadding(0,5,0,5);
-            ll.addView(myButton, lp);
-            Log.v("INC_TEST", "TEST");
-            try {
-                jsonArray = new JSONArray(result);
-                int length = jsonArray.length();
-                for (int i = 0; i < length; i++) {
+        protected void onPostExecute(String result) {
+            try{
+                JSONArray jsonArray = new JSONArray(result);
+                for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    Button myButton = new Button(context);
-                    school_des = jsonObject.getString("SOC_SCHOOL_DESCRIPTION");
-                    //Log.v("school_des", school_des);
-                    myButton.setText(school_des);
-                    myButton.setBackgroundColor(Color.LTGRAY);
-                    myButton.setTextColor(Color.BLACK);
-                    myButton.setId(i);
-                    ll.addView(myButton, lp);
-                    myButton.setOnClickListener(new View.OnClickListener() {
-                        public void onClick(View arg0) {
-                            //Starting a new Intent
-                            Intent nextScreen = new Intent(getApplicationContext(), DeptActivity.class);
-                            nextScreen.putExtra("term_num", term_num);
-                            try {
-                                JSONObject tempJSONObject = jsonArray.getJSONObject(arg0.getId());
-                                String tempSchoolCode = tempJSONObject.getString("SOC_SCHOOL_CODE");
-                                nextScreen.putExtra("school", tempSchoolCode);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            //Log.v("ID", "" + arg0.getId());
-                            startActivity(nextScreen);
-                        }
-                    });
+                    BlogPost blogPost = new BlogPost(jsonObject);
+                    BlogPostSingleton.getInstance().addBlogPost(blogPost);
                 }
-            } catch (JSONException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-        }*/
+        }
+    }
+
+    /**
+     * Removes the extra css from the WP JSON API call caused from the huge_it_slider
+     * TODO: Should fix the API to not send the huge_it_slide css
+     * @param string
+     * @return string
+     */
+    private String removeCSSFromString(String string) {
+        string = string.substring(string.indexOf("["));
+        return string;
     }
 }
+
+
